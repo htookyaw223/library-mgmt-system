@@ -1,8 +1,6 @@
 package com.htookyaw.library.service.impl;
 
-import com.htookyaw.library.dto.BookReqDto;
-import com.htookyaw.library.dto.BookResDto;
-import com.htookyaw.library.dto.BorrowerReqDto;
+import com.htookyaw.library.dto.*;
 import com.htookyaw.library.entity.Book;
 import com.htookyaw.library.entity.BorrowHistory;
 import com.htookyaw.library.entity.Borrower;
@@ -85,6 +83,14 @@ public class LibraryServiceImpl implements LibraryService {
     public BookResDto getBooks(int page, int size) {
         Page<Book> bookPage = bookRepo.findAll(PageRequest.of(page, size));
         return new BookResDto(bookPage.getTotalElements(), bookPage.getContent());
+    }
+
+    @Override
+    public BorrowHistoryResDto getBorrowHistoryByBorrowerId(Long borrowerId) {
+        Borrower borrower = borrowerRepo.findById(borrowerId).orElseThrow(()-> new NoSuchElementException("Borrower has not been registered yet"));
+
+        List<RecordHistoryDto> records = historyRepo.findAllByBorrower(borrower);
+        return new BorrowHistoryResDto(borrower, records);
     }
 
 }

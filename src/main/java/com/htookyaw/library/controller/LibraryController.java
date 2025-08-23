@@ -1,8 +1,6 @@
 package com.htookyaw.library.controller;
 
-import com.htookyaw.library.dto.BookReqDto;
-import com.htookyaw.library.dto.BookResDto;
-import com.htookyaw.library.dto.BorrowerReqDto;
+import com.htookyaw.library.dto.*;
 import com.htookyaw.library.entity.Book;
 import com.htookyaw.library.entity.BorrowHistory;
 import com.htookyaw.library.entity.Borrower;
@@ -12,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -42,14 +42,18 @@ public class LibraryController {
     }
 
     // Borrow Book
-    @PostMapping("/borrow/{bookId}/borrower/{borrowerId}")
-    public ResponseEntity<BorrowHistory> borrowBook(@PathVariable Long bookId, @PathVariable Long borrowerId) {
-        return ResponseEntity.ok(libraryService.borrowBook(bookId, borrowerId));
+    @PostMapping("/borrows")
+    public ResponseEntity<BorrowHistory> borrowBook(@RequestBody @Valid BorrowerActionDto dto) {
+       return ResponseEntity.ok(libraryService.borrowBook(dto.getBookId(), dto.getBorrowerId()));
     }
 
     // Return Book
-    @PostMapping("/return/{bookId}/borrower/{borrowerId}")
-    public ResponseEntity<BorrowHistory> returnBook(@PathVariable Long bookId, @PathVariable Long borrowerId) {
-        return ResponseEntity.ok(libraryService.returnBook(bookId, borrowerId));
+    @PostMapping("/returns")
+    public ResponseEntity<BorrowHistory> returnBook(@RequestBody @Valid BorrowerActionDto dto) {
+        return ResponseEntity.ok(libraryService.returnBook(dto.getBookId(), dto.getBorrowerId()));
+    }
+    @GetMapping("/borrower/history/{borrowerId}")
+    public ResponseEntity<BorrowHistoryResDto> getBorrowHistory(@PathVariable("borrowerId") Long borrowerId) {
+        return ResponseEntity.ok(libraryService.getBorrowHistoryByBorrowerId(borrowerId));
     }
 }

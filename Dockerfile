@@ -1,17 +1,21 @@
-# Use a secure and official base image with Java 17
-FROM eclipse-temurin:17-jdk-jammy
+# Build stage
+FROM eclipse-temurin:17-jdk AS build
+WORKDIR /app
 
-# Argument to hold the name of the JAR file
-ARG JAR_FILE=target/*.jar
+# Copy Maven wrapper and prepare dependencies
+COPY mvnw ./
+COPY .mvn .mvn
+COPY pom.xml ./
+RUN ./mvnw dependency:go-offline
 
-# Set a working directory inside the container
-WORKDIR /opt/app
+# Copy source and build the jar
+COPY src ./src
+RUN ./mvnw package -DskipTests
 
-# Copy the JAR file from our build context to the container
-COPY ${JAR_FILE} app.jar
+# Runtime stage
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=build /app/target/library-management-system.jar library-management-system.jar
 
-# Expose the port the app runs on (Spring Boot default is 8080)
-EXPOSE 8080
-
-# Command to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Default run (can override with SPRING_PROFILES_ACTIVE)
+ENTRYPOINT ["java", "-jar", "library-management-system.jar"]

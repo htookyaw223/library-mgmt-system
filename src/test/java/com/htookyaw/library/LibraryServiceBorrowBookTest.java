@@ -62,13 +62,6 @@ class LibraryServiceBorrowBookTest {
         );
     }
 
-    // ---------------- BORROWER TESTS ----------------//
-    @Test
-    void registerBorrowerTest() {
-
-    }
-
-
     // ---------------- BORROW TESTS ----------------
 
     @Test
